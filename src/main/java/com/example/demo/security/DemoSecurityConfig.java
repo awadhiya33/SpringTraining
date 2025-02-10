@@ -1,25 +1,25 @@
 package com.example.demo.security;
 
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class DemoSecurityConfig {
 	
+	
+	//add support for JDBC and no more hardcode for users
 	@Bean
-	public InMemoryUserDetailsManager userDetailsManager() {
-		UserDetails abhishek=User.builder().username("abhi").password("{noop}test123").roles("Employee","Manager","Admin").build();	
-		UserDetails amit=User.builder().username("amit").password("{noop}test123").roles("Employee","Manager").build();
-		UserDetails mishra=User.builder().username("mishra").password("{noop}test123").roles("Employee").build();
-		
-		return new InMemoryUserDetailsManager(abhishek,amit,mishra);
+	public UserDetailsManager userDetailsManager(DataSource dataSource) {
+		return new JdbcUserDetailsManager(dataSource);
 	}
 	
 	@Bean
@@ -36,4 +36,13 @@ public class DemoSecurityConfig {
 		http.csrf(csrf->csrf.disable());
 		return http.build();
 	}
+	
+//	@Bean
+//	public InMemoryUserDetailsManager userDetailsManager() {
+//		UserDetails abhishek=User.builder().username("abhi").password("{noop}test123").roles("Employee","Manager","Admin").build();	
+//		UserDetails amit=User.builder().username("amit").password("{noop}test123").roles("Employee","Manager").build();
+//		UserDetails mishra=User.builder().username("mishra").password("{noop}test123").roles("Employee").build();
+//		
+//		return new InMemoryUserDetailsManager(abhishek,amit,mishra);
+//	}
 }
